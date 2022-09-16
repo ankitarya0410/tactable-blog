@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import type { NextPage } from 'next';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Header from 'common/header/header';
 import Footer from 'common/footer/footer';
@@ -7,40 +8,18 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
+import { useQuery } from 'react-query';
+import { Post } from '../constants';
+import { colours } from '../common/colours';
+// import { useMediaQuery } from '@mountain-ui/react-hooks';
 
-import { useQuery } from "react-query";
-
-type Author = {
-  postId: number,
-  id: number,
-  updatedAt: string,
-  createdAt: string,
-  avatar: string,
-  name: string
-};
-
-type Comment = {
-  title: string,
-  description: string,
-  createdAt: string,
-  updatedAt: string,
-  postId: number,
-  id: number
-};
-
-type Post = {
-  title: string,
-  description: string,
-  createdAt: string,
-  updatedAt: string,
-  id: number,
-  Authors: Author[],
-  Comments: Comment[]
-};
-
-const HomePage = () => {
+const Home: NextPage = () => {
   const [page, setPage] = useState(1);
   let response = [], totalCount = 0, pageCount = 1;
+
+  /*const isMobile = useMediaQuery('screen and (min-width: 320px) and (max-width: 480px)');
+  const isTablet = useMediaQuery('screen and (min-width: 481px) and (max-width: 768px)');
+  const isDesktop = !isMobile && !isTablet;*/
 
   const { status: postStatus, error: postError, data: postData } = useQuery<Post[], Error>(
     ['posts', { page }],
@@ -98,7 +77,6 @@ const HomePage = () => {
             title={post.title}
             description={post.description}
             createdAt={post.createdAt}
-            updatedAt={post.updatedAt}
             authors={post.authors}
             comments={post.comments}
             key={post.id}
@@ -159,10 +137,10 @@ const PaginationWrapper = styled.div`
 `;
 
 const StyledButton = styled.button`
-  background: #fff;
+  background: ${colours.white};
   border: none;
   cursor: pointer;
-  color: #0E3B5A;
+  color: ${colours.primaryBlue};
   font-size: 24px;
   opacity: 0.75;
   transition: transform 0.2s;
@@ -192,4 +170,4 @@ const LoadingState = styled.div`
   padding: 25%;
 `;
 
-export default HomePage;
+export default Home;

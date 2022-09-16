@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faInstagram, faTwitter, faFacebook, faLinkedin } from '@fortawesome/free-brands-svg-icons'
 import styled from 'styled-components';
+import { colours } from '../colours';
 
 const Footer = () => {
   return (
@@ -35,8 +36,8 @@ const ListItem = styled.li`
   width: 14px;
   list-style-type: none;
   margin-right: 5px;
-  background: #696765;
-  color: #fff;
+  background: ${colours.steelGray};
+  color: ${colours.white};
   padding: 12px 13px;
   border-radius: 25px;  
   cursor: pointer;
@@ -44,15 +45,15 @@ const ListItem = styled.li`
   align-items: center;
 
   &:hover {
-    background: #fff;
-    color: #0E3B5A;
+    background: ${colours.white};
+    color: ${colours.primaryBlue};
   }
 `;
 
 const FooterWrapper = styled.div`
   min-height: 100px;
-  background: #0E3B5A;
-  color: #fff;
+  background: ${colours.primaryBlue};
+  color: ${colours.white};
   text-align: center;
   width: 100%;
   padding: 50px 0;
@@ -79,7 +80,7 @@ const LinkList = styled.li`
 `;
 
 const StyledLink = styled.a`
-  color: #fff;
+  color: ${colours.white};
   text-decoration: none;
   cursor: pointer;
   font-weight: 400;

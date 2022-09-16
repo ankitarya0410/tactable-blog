@@ -3,37 +3,11 @@ import axios from 'axios';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAnglesDown, faAnglesUp } from '@fortawesome/free-solid-svg-icons'
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns';
+import { CardType } from '../constants';
+import { colours } from '../colours';
 
-interface Author {
-  postId: number,
-  id: number,
-  updatedAt: string,
-  createdAt: string,
-  avatar: string,
-  name: string
-};
-
-interface Comment {
-  title: string,
-  description: string,
-  createdAt: string,
-  updatedAt: string,
-  postId: number,
-  id: number
-};
-
-interface CardType {
-  id: number,
-  updatedAt: string,
-  createdAt: string,
-  title: string,
-  description: string,
-  authors: Author[],
-  comments: Comment[]
-}
-
-const Card: React.FC<CardType> = ({ id, title, description, createdAt, updatedAt, authors, comments }) => {
+const Card: React.FC<CardType> = ({ id, title, description, createdAt, authors, comments }) => {
   const [randomImage, setRandomImage] = useState(null);
   const [showComments, setShowComments] = useState(new Set());
 
@@ -75,7 +49,7 @@ const Card: React.FC<CardType> = ({ id, title, description, createdAt, updatedAt
         <h3>{title}</h3>
         <p>{description}</p>
         <div>
-          <StyledButton onClick={() => toggleCommentSection(id)}>
+          <StyledButton onClick={() => toggleCommentSection(id)} disabled={comments.length === 0}>
             {showComments.has(id) ?
               <div><FontAwesomeIcon icon={faAnglesUp} /><span>Hide Comments</span></div> :
               <div><FontAwesomeIcon icon={faAnglesDown} /><span>Show Comments</span></div>
@@ -101,11 +75,11 @@ const Card: React.FC<CardType> = ({ id, title, description, createdAt, updatedAt
 const CardWrapper = styled.div`
   padding: 30px;
   margin: 30px 0;
-  border: 1px solid #d6d6d6;
+  border: 1px solid ${colours.lightGray};
   border-radius: 20px;
   display: flex;
-  -webkit-box-shadow: 0px -3px 17px -6px #0E3B5A; 
-  box-shadow: 0px -3px 17px -6px #0E3B5A;
+  -webkit-box-shadow: 0px -3px 17px -6px ${colours.primaryBlue}; 
+  box-shadow: 0px -3px 17px -6px ${colours.primaryBlue};
 `;
 
 const CardContent = styled.div`
@@ -136,14 +110,22 @@ const AvatarWrapper = styled.div`
 `;
 
 const StyledButton = styled.button`
-  color: #0E3B5A;
-  background: #fff;
+  color: ${colours.primaryBlue};
+  background: ${colours.white};
   border: none;  
   margin: 10px 0;
   cursor: pointer;
   span {
     margin-left: 8px;
   }
+  ${({disabled}) => disabled && `
+
+    opacity: 0.5;
+    cursor: initial;
+    
+    &:hover {
+    transform: none;
+  `}
 `;
 
 const CommentTitle = styled.div`
@@ -161,7 +143,7 @@ const CommentMeta = styled.div`
   display: flex;
   justify-content: right;
   font-size: 14px; 
-  color: #696765; 
+  color: ${colours.steelGray}; 
   font-size: 12px;
   span {
     font-size: 400;
@@ -170,7 +152,7 @@ const CommentMeta = styled.div`
 
 const Posted = styled.div`
   margin-right: 10px;
-  color: #696765; 
+  color: ${colours.steelGray}; 
 `;
 
 export default Card;
