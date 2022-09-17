@@ -1,4 +1,3 @@
-import type { NextPage } from 'next';
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Header from 'common/header/header';
@@ -9,10 +8,11 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 import { useQuery, UseQueryResult } from 'react-query';
-import { Post } from '../common/constants';
+import {Post, PageProps, MobileProps} from '../common/constants';
 import { colours } from '../common/colours';
+import { ColorRing } from  'react-loader-spinner';
 
-const Home: NextPage = () => {
+const Home: React.FC<PageProps> = ({ isMobile, isTablet }) => {
   const [page, setPage] = useState(1);
   let posts: Array<Post> = [], pageCount: number = 1;
 
@@ -52,13 +52,21 @@ const Home: NextPage = () => {
         <title>Tactable Blog</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <Header />
+      <Header isMobile={isMobile} isTablet={isTablet} />
       {postStatus === 'loading' && (
         <LoadingState>
-          <img src='../public/favicon.ico' />
+          <ColorRing
+            visible={true}
+            height="80"
+            width="80"
+            ariaLabel="blocks-loading"
+            wrapperStyle={{}}
+            wrapperClass="blocks-wrapper"
+            colors={[`${colours.primaryBlue}`, `${colours.primaryBlue}`, `${colours.primaryBlue}`, `${colours.primaryBlue}`, `${colours.primaryBlue}`]}
+          />
         </LoadingState>
       )}
-      <ContentWrapper>
+      <ContentWrapper isTablet={isTablet} isMobile={isMobile}>
         {postStatus === 'success' && posts.length > 0 && posts.map((post: Post) => (
           <Card
             id={post.id}
@@ -67,15 +75,20 @@ const Home: NextPage = () => {
             createdAt={post.createdAt}
             authors={post.authors}
             comments={post.comments}
+            isMobile={isMobile}
             key={post.id}
           />
         ))}
-        <PaginationWrapper>
-          <StyledButton onClick={() => handlePagination('prev')} disabled={page === 1}><FontAwesomeIcon icon={faAngleLeft}/><span>Prev</span></StyledButton>
-          <StyledButton onClick={() => handlePagination('next')} disabled={countStatus === 'success' && page === pageCount}><span>Next</span><FontAwesomeIcon icon={faAngleRight}/></StyledButton>
+        {postStatus === 'success' && (<PaginationWrapper>
+          <StyledButton onClick={() => handlePagination('prev')} disabled={page === 1}><FontAwesomeIcon
+            icon={faAngleLeft}/><span>Prev</span></StyledButton>
+          <StyledButton onClick={() => handlePagination('next')}
+                        disabled={countStatus === 'success' && page === pageCount}><span>Next</span><FontAwesomeIcon
+            icon={faAngleRight}/></StyledButton>
         </PaginationWrapper>
+        )}
       </ContentWrapper>
-      <Footer />
+      <Footer isMobile={isMobile} isTablet={isTablet} />
     </Wrapper>
   )
 }
@@ -113,10 +126,14 @@ const Wrapper = styled.div`
   width: 100%;
 `;
 
-const ContentWrapper = styled.div`
+const ContentWrapper = styled.div<MobileProps>`
   padding: 80px;
   width: 80%;
   margin: auto;
+  ${({isMobile, isTablet}) => (isMobile || isTablet) && `
+    width: 100%;
+    padding: 15px;
+  `}
 `;
 
 const PaginationWrapper = styled.div`

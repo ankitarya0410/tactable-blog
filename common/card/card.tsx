@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAnglesDown, faAnglesUp } from '@fortawesome/free-solid-svg-icons'
 import { format } from 'date-fns';
-import { CardType } from '../constants';
+import { CardType, MobileProps } from '../constants';
 import { colours } from '../colours';
 
-const Card: React.FC<CardType> = ({ id, title, description, createdAt, authors, comments }) => {
+const Card: React.FC<CardType> = ({ id, title, description, createdAt, authors, comments, isMobile }) => {
   const [randomImage, setRandomImage] = useState('');
   const [showComments, setShowComments] = useState(new Set());
 
@@ -32,21 +32,22 @@ const Card: React.FC<CardType> = ({ id, title, description, createdAt, authors, 
   }
 
   return (
-    <CardWrapper>
-      <div>
+    <CardWrapper isMobile={isMobile}>
+      {isMobile && (<h3 style={{ textAlign: 'center' }}>{title}</h3>)}
+      <CardImage isMobile={isMobile}>
         <img src={randomImage} alt={title} />
-      </div>
+      </CardImage>
       <CardContent>
-        <ContentHeader>
-          <Posted>Created on &nbsp; {format(new Date(createdAt), 'P')}</Posted>
+        <ContentHeader isMobile={isMobile}>
+          <Posted isMobile={isMobile}>Created on &nbsp; {format(new Date(createdAt), 'P')}</Posted>
           {authors.map(author => (
-            <AvatarWrapper key={author.id}>
+            <AvatarWrapper key={author.id} isMobile={isMobile}>
               <Avatar src={author.avatar} />
               <span>{author.name}</span>
             </AvatarWrapper>
           ))}
         </ContentHeader>
-        <h3>{title}</h3>
+        {!isMobile && (<h3>{title}</h3>)}
         <p>{description}</p>
         <div>
           <StyledButton onClick={() => toggleCommentSection(id)} disabled={comments.length === 0}>
@@ -66,13 +67,12 @@ const Card: React.FC<CardType> = ({ id, title, description, createdAt, authors, 
             )}
           </div>
         </div>
-
       </CardContent>
     </CardWrapper>
   )
 }
 
-const CardWrapper = styled.div`
+const CardWrapper = styled.div<MobileProps>`
   padding: 30px;
   margin: 30px 0;
   border: 1px solid ${colours.lightGray};
@@ -80,6 +80,17 @@ const CardWrapper = styled.div`
   display: flex;
   -webkit-box-shadow: 0px -3px 17px -6px ${colours.primaryBlue}; 
   box-shadow: 0px -3px 17px -6px ${colours.primaryBlue};
+  ${({isMobile}) => isMobile && `
+    display: block;
+    padding: 10px;
+  `}
+`;
+
+const CardImage = styled.div<MobileProps>`
+  ${({isMobile}) => isMobile && `
+    text-align: center;
+    padding-bottom: 20px;
+  `}
 `;
 
 const CardContent = styled.div`
@@ -98,15 +109,23 @@ const Avatar = styled.img`
   margin-right: 5px;
 `;
 
-const ContentHeader = styled.div`
+const ContentHeader = styled.div<MobileProps>`
   display: flex;
   justify-content: right;
+  ${({isMobile}) => isMobile && `
+    display: block;
+    text-align: center;
+  `}
 `;
 
-const AvatarWrapper = styled.div`
+const AvatarWrapper = styled.div<MobileProps>`
   margin-right: 15px;
   align-items: center;
   display: flex;
+  ${({isMobile}) => isMobile && `
+    display: inline-flex;
+    text-align: center;
+  `}
 `;
 
 const StyledButton = styled.button`
@@ -150,9 +169,13 @@ const CommentMeta = styled.div`
   }
 `;
 
-const Posted = styled.div`
+const Posted = styled.div<MobileProps>`
   margin-right: 10px;
   color: ${colours.steelGray}; 
+  ${({isMobile}) => isMobile && `
+    margin-right: 0;
+    padding-bottom: 10px;
+  `}
 `;
 
 export default Card;

@@ -1,13 +1,15 @@
+import React, { useState } from 'react';
 import '../styles/globals.css'
-import type { AppProps } from 'next/app'
 import { QueryClient, QueryClientProvider } from "react-query";
-import { useState } from 'react';
+import { useMediaQuery } from 'react-responsive'
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component }: any) {
   const [queryClient] = useState(() => new QueryClient());
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+  const isTablet = useMediaQuery({ query: '(min-width: 769px) and (max-width: 968px)' });
   return (
     <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
+      <Component isMobile={isMobile} isTablet={isTablet} />
     </QueryClientProvider>
   )
 }

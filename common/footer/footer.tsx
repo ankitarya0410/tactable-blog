@@ -4,10 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faInstagram, faTwitter, faFacebook, faLinkedin } from '@fortawesome/free-brands-svg-icons'
 import styled from 'styled-components';
 import { colours } from '../colours';
+import { MobileProps, PageProps } from '../constants';
 
-const Footer = () => {
+const Footer: React.FC<PageProps> = ({ isMobile, isTablet}) => {
   return (
-    <FooterWrapper>
+    <FooterWrapper isMobile={isMobile} isTablet={isTablet}>
       <List>
         <ListItem><FontAwesomeIcon icon={faTwitter} /></ListItem>
         <ListItem><FontAwesomeIcon icon={faLinkedin} /></ListItem>
@@ -49,13 +50,16 @@ const ListItem = styled.li`
   }
 `;
 
-const FooterWrapper = styled.div`
+const FooterWrapper = styled.div<MobileProps>`
   min-height: 100px;
   background: ${colours.primaryBlue};
   color: ${colours.white};
   text-align: center;
   width: 100%;
   padding: 50px 0;
+  ${({isMobile, isTablet}) => (isMobile || isTablet) && `
+    margin-top: 60px;
+  `}  
 `;
 
 const Copyright = styled.div`

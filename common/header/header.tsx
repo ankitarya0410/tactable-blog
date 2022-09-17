@@ -1,21 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faBars, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { faInstagram, faTwitter, faFacebook} from '@fortawesome/free-brands-svg-icons'
 import styled from 'styled-components';
 import { colours } from '../colours';
+import { MobileProps, PageProps } from '../constants';
 
-const Header = () => {
+const Header: React.FC<PageProps> = ({ isMobile, isTablet}) => {
+
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  const toggleMenuBarMobile = () => {
+    if (showMobileMenu) {
+      document.body.style.overflow = 'auto';
+    } else {
+      document.body.style.overflow = 'hidden';
+    }
+    setShowMobileMenu(!showMobileMenu);
+  }
 
   return (
     <div>
-      <HeaderWrapper >
-        <SearchWrapper>
+      <MobileNavBar isMobile={isMobile} isTablet={isTablet}>
+        <StyledButton onClick={() => toggleMenuBarMobile()} showMenu={showMobileMenu}><FontAwesomeIcon icon={showMobileMenu ? faXmark : faBars} /></StyledButton>
+        <MenuBar showMenu={showMobileMenu}>
+          <p>This is the mobile menu space!</p>
+        </MenuBar>
+      </MobileNavBar>
+      <HeaderWrapper isTablet={isTablet} isMobile={isMobile}>
+        <SearchWrapper isTablet={isTablet} isMobile={isMobile}>
           <SearchInput type="search" placeholder="Search" />
           <StyledIcon><FontAwesomeIcon icon={faSearch} /></StyledIcon>
         </SearchWrapper>
-        <Title>TACTABLE BLOG</Title>
-        <List>
+        <Title role="heading">TACTABLE BLOG</Title>
+        <List isTablet={isTablet} isMobile={isMobile}>
           <ListItem><FontAwesomeIcon icon={faTwitter} /></ListItem>
           <ListItem><FontAwesomeIcon icon={faFacebook} /></ListItem>
           <ListItem><FontAwesomeIcon icon={faInstagram} /></ListItem>
@@ -26,9 +44,56 @@ const Header = () => {
   )
 }
 
-const List = styled.ul`
+const MobileNavBar = styled.div<MobileProps>`
+  position: absolute;
+  padding: 35px 15px;
+  ${({isMobile, isTablet}) => !isMobile && !isTablet && `
+    display: none;
+  `}
+`;
+
+const MenuBar = styled.div<MobileProps>`
+  height: 0;
+  top: 0;
+  left: 0;
+  position: fixed;
+  width: 100vw;
+  transition: height 1s ease-in-out;
+  background: ${colours.primaryBlue};
+  p{
+    display: none;
+  }
+  ${({showMenu}) => showMenu && `
+    height: 100vh;
+    overflow-y: hidden;
+    p {
+    text-align: center;
+    display: block;
+    justify-items: center;
+    align-items: center;
+    margin: 50% auto; 
+    color: ${colours.white};   
+  }
+  `}
+`;
+
+const StyledButton = styled.button<MobileProps>`
+  border: none;
+  background: none;
+  cursor: pointer;
+  ${({showMenu}: any) => showMenu && `
+    color: ${colours.white};
+    position: absolute;
+    z-index: 2;
+  `}
+`;
+
+const List = styled.ul<MobileProps>`
   display: flex;
   align-items: center;
+  ${({isMobile, isTablet}) => (isMobile || isTablet) && `
+    display: none;
+  `}
 `;
 
 const ListItem = styled.li`
@@ -71,16 +136,22 @@ const StyledIcon = styled.div`
   color: ${colours.lightGray};
 `;
 
-const SearchWrapper = styled.div`
+const SearchWrapper = styled.div<MobileProps>`
   display: flex;
   align-items: center;
+  ${({isMobile, isTablet}) => (isMobile || isTablet) && `
+    display: none;
+  `}
 `;
 
-const HeaderWrapper = styled.div`
+const HeaderWrapper = styled.div<MobileProps>`
   display: flex;
   justify-content: space-between;
   padding: 10px 30px;
   border-bottom: 1px solid ${colours.lightGray};
+  ${({isMobile, isTablet}) => (isMobile || isTablet) && `
+    justify-content: center;
+  `}
 `;
 
 const Title = styled.h2`

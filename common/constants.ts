@@ -32,5 +32,17 @@ export interface CardType {
   title: string,
   description: string,
   authors: Array<Author>,
-  comments: Array<Comment>
+  comments: Array<Comment>,
+  isMobile: boolean
+}
+
+export interface MobileProps {
+  showMenu?: boolean,
+  isMobile?: boolean,
+  isTablet?: boolean
+}
+
+export interface PageProps {
+  isMobile: boolean,
+  isTablet: boolean
 }
