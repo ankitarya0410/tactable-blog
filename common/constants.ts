@@ -16,21 +16,21 @@ export type Comment = {
   id: number
 };
 
-export type Post = {
+export interface Post {
   title: string,
   description: string,
   createdAt: string,
   updatedAt: string,
   id: number,
-  Authors: Author[],
-  Comments: Comment[]
-};
+  authors: Array<Author>,
+  comments: Array<Comment>
+}
 
 export interface CardType {
   id: number,
   createdAt: string,
   title: string,
   description: string,
-  authors: Author[],
-  comments: Comment[]
+  authors: Array<Author>,
+  comments: Array<Comment>
 }

@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Header from 'common/header/header';
 import Footer from 'common/footer/footer';
@@ -8,42 +8,30 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
-import { useQuery } from 'react-query';
-import { Post } from '../constants';
+import { useQuery, UseQueryResult } from 'react-query';
+import { Post } from '../common/constants';
 import { colours } from '../common/colours';
-// import { useMediaQuery } from '@mountain-ui/react-hooks';
 
 const Home: NextPage = () => {
   const [page, setPage] = useState(1);
-  let response = [], totalCount = 0, pageCount = 1;
+  let posts: Array<Post> = [], pageCount: number = 1;
 
-  /*const isMobile = useMediaQuery('screen and (min-width: 320px) and (max-width: 480px)');
-  const isTablet = useMediaQuery('screen and (min-width: 481px) and (max-width: 768px)');
-  const isDesktop = !isMobile && !isTablet;*/
-
-  const { status: postStatus, error: postError, data: postData } = useQuery<Post[], Error>(
+  const {status: postStatus, data: postData}: UseQueryResult<any, Error> = useQuery<any, Error>(
     ['posts', { page }],
     getPosts
   );
 
-  const { status: countStatus, data: countData } = useQuery<Post[], Error>(
+  const {status: countStatus, data: countData}: UseQueryResult<any, Error> = useQuery<any, Error>(
     ['count', {}],
     getCount
   );
 
   if (postStatus === 'success') {
-    response = {
-      totalCount: !!postData && postData.length > 0 && postData.length,
-      perPage: 5,
-      posts: !!postData && postData.length > 0 && postData,
-      postStatus,
-      postError
-    };
+    posts = postData;
   }
 
   if(countStatus === 'success') {
-    totalCount = !!countData && countData.length;
-    pageCount = !!countData && countData.length > 0 && Math.ceil(totalCount/5);
+    pageCount = Math.ceil(countData/5);
   }
 
   const handlePagination = (flag: string) => {
@@ -67,11 +55,11 @@ const Home: NextPage = () => {
       <Header />
       {postStatus === 'loading' && (
         <LoadingState>
-          <img src='../public/circles.svg' />
+          <img src='../public/favicon.ico' />
         </LoadingState>
       )}
       <ContentWrapper>
-        {postStatus === 'success' && !!response && !!response.posts && response.posts.length > 0 && response.posts.map((post) => (
+        {postStatus === 'success' && posts.length > 0 && posts.map((post: Post) => (
           <Card
             id={post.id}
             title={post.title}
@@ -96,7 +84,7 @@ type Params = {
   queryKey: [string, { page: number }];
 };
 
-async function getPosts(params: Params) {
+const getPosts: any = async (params: Params) => {
   const [, { page }] = params.queryKey;
   const response = await axios.get(`https://6144e843411c860017d256f0.mockapi.io/api/v1/posts?page=${page}&limit=5&sortBy=createdAt&order=desc`);
 
@@ -107,7 +95,7 @@ async function getPosts(params: Params) {
   return response.data;
 }
 
-async function getCount(params: Params) {
+const getCount: any = async (params: Params) => {
   const [, {}] = params.queryKey;
   const response = await axios.get(`https://6144e843411c860017d256f0.mockapi.io/api/v1/posts?sortBy=createdAt&order=desc`);
 
@@ -115,7 +103,7 @@ async function getCount(params: Params) {
     throw new Error("Problem fetching data");
   }
 
-  return response.data;
+  return response.data.length;
 }
 
 const Wrapper = styled.div`

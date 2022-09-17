@@ -8,7 +8,7 @@ import { CardType } from '../constants';
 import { colours } from '../colours';
 
 const Card: React.FC<CardType> = ({ id, title, description, createdAt, authors, comments }) => {
-  const [randomImage, setRandomImage] = useState(null);
+  const [randomImage, setRandomImage] = useState('');
   const [showComments, setShowComments] = useState(new Set());
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const Card: React.FC<CardType> = ({ id, title, description, createdAt, authors, 
 
   }, [id]);
 
-  const toggleCommentSection = (id) => {
+  const toggleCommentSection = (id: number) => {
     const newSet = new Set(showComments);
     if (!newSet.has(id)) {
       newSet.add(id);

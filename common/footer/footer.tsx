@@ -33,12 +33,11 @@ const List = styled.ul`
 `;
 
 const ListItem = styled.li`
-  width: 14px;
   list-style-type: none;
   margin-right: 5px;
   background: ${colours.steelGray};
   color: ${colours.white};
-  padding: 12px 13px;
+  padding: 12px;
   border-radius: 25px;  
   cursor: pointer;
   display: flex;
