@@ -40,7 +40,7 @@ const Card: React.FC<CardType> = ({ id, title, description, createdAt, authors, 
       <CardContent>
         <ContentHeader isMobile={isMobile}>
           <Posted isMobile={isMobile}>Created on &nbsp; {format(new Date(createdAt), 'P')}</Posted>
-          {authors.map(author => (
+          {!!authors && authors.length > 0 && authors.map(author => (
             <AvatarWrapper key={author.id} isMobile={isMobile}>
               <Avatar src={author.avatar} />
               <span>{author.name}</span>
@@ -50,7 +50,7 @@ const Card: React.FC<CardType> = ({ id, title, description, createdAt, authors, 
         {!isMobile && (<h3>{title}</h3>)}
         <p>{description}</p>
         <div>
-          <StyledButton onClick={() => toggleCommentSection(id)} disabled={comments.length === 0}>
+          <StyledButton role="button" onClick={() => toggleCommentSection(id)} disabled={!!comments && comments.length === 0}>
             {showComments.has(id) ?
               <div><FontAwesomeIcon icon={faAnglesUp} /><span>Hide Comments</span></div> :
               <div><FontAwesomeIcon icon={faAnglesDown} /><span>Show Comments</span></div>

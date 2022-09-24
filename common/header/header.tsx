@@ -38,7 +38,6 @@ const Header: React.FC<PageProps> = ({ isMobile, isTablet}) => {
           <ListItem><FontAwesomeIcon icon={faFacebook} /></ListItem>
           <ListItem><FontAwesomeIcon icon={faInstagram} /></ListItem>
         </List>
-
       </HeaderWrapper>
     </div>
   )

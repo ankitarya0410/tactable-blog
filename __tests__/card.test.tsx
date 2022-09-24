@@ -1,4 +1,4 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, screen, waitFor } from '@testing-library/react'
 import React from 'react';
 import Card from 'common/card/card';
 import '@testing-library/jest-dom';
@@ -90,6 +90,7 @@ describe('Card', () => {
       <div>
         <button
           class="sc-gKXOVf khxqTS"
+          role="button"
         >
           <div>
             <svg
@@ -118,5 +119,56 @@ describe('Card', () => {
   </div>
 </DocumentFragment>
 `)
+  })
+
+  it('renders a card with comment title on click event', async () => {
+
+    render(<Card
+      id={sampleData.id}
+      title={sampleData.title}
+      description={sampleData.description}
+      createdAt={sampleData.createdAt}
+      authors={sampleData.authors}
+      comments={sampleData.comments}
+      isMobile={false}
+      key={sampleData.id}
+    />)
+
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => screen.getByText('Sed quis omnis.'))
+    expect(screen.getByText('Sed quis omnis.')).toBeInTheDocument()
+  })
+
+  it(' does not render an active show comments button when comments array is empty', async () => {
+
+    render(<Card
+      id={sampleData.id}
+      title={sampleData.title}
+      description={sampleData.description}
+      createdAt={sampleData.createdAt}
+      authors={sampleData.authors}
+      comments={[]}
+      isMobile={false}
+      key={sampleData.id}
+    />)
+
+    expect(screen.getByRole('button')).toBeDisabled()
+  })
+
+  it(' does not render any authors when authors array is empty', async () => {
+
+    render(<Card
+      id={sampleData.id}
+      title={sampleData.title}
+      description={sampleData.description}
+      createdAt={sampleData.createdAt}
+      authors={[]}
+      comments={sampleData.comments}
+      isMobile={false}
+      key={sampleData.id}
+    />)
+
+    const authorName = screen.queryByText('Darrin Wuckert')
+    expect(authorName).toBeNull()
   })
 })

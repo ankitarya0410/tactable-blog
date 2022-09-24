@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import Header from 'common/header/header';
 import Footer from 'common/footer/footer';
@@ -7,34 +7,25 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
-import { useQuery, UseQueryResult } from 'react-query';
-import {Post, PageProps, MobileProps} from '../common/constants';
+import { UseQueryResult, useQueries } from 'react-query';
+import { Post, PageProps, MobileProps } from '../common/constants';
 import { colours } from '../common/colours';
 import { ColorRing } from  'react-loader-spinner';
 
 const Home: React.FC<PageProps> = ({ isMobile, isTablet }) => {
   const [page, setPage] = useState(1);
-  let posts: Array<Post> = [], pageCount: number = 1;
+  let pageCount: number = 1;
 
-  const {status: postStatus, data: postData}: UseQueryResult<any, Error> = useQuery<any, Error>(
-    ['posts', { page }],
-    getPosts
-  );
+  const [post, count]: [UseQueryResult<any, any>, UseQueryResult<any, any>] = useQueries([
+      { queryKey: ['posts', { page }], queryFn: getPosts},
+      { queryKey: ['count', {}], queryFn: getCount}
+    ]);
 
-  const {status: countStatus, data: countData}: UseQueryResult<any, Error> = useQuery<any, Error>(
-    ['count', {}],
-    getCount
-  );
-
-  if (postStatus === 'success') {
-    posts = postData;
+  if(!!count && count.status === 'success') {
+    pageCount = Math.ceil(count.data.length/5);
   }
 
-  if(countStatus === 'success') {
-    pageCount = Math.ceil(countData/5);
-  }
-
-  const handlePagination = (flag: string) => {
+  const handlePagination = useCallback((flag: string) => {
     if (flag === 'next') {
       setPage(page + 1);
     } else {
@@ -44,7 +35,7 @@ const Home: React.FC<PageProps> = ({ isMobile, isTablet }) => {
       top: 0,
       behavior: 'smooth'
     });
-  }
+  }, [page]);
 
   return (
     <Wrapper>
@@ -53,7 +44,7 @@ const Home: React.FC<PageProps> = ({ isMobile, isTablet }) => {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <Header isMobile={isMobile} isTablet={isTablet} />
-      {postStatus === 'loading' && (
+      {!!post && post.status === 'loading' && (
         <LoadingState>
           <ColorRing
             visible={true}
@@ -67,7 +58,7 @@ const Home: React.FC<PageProps> = ({ isMobile, isTablet }) => {
         </LoadingState>
       )}
       <ContentWrapper isTablet={isTablet} isMobile={isMobile}>
-        {postStatus === 'success' && posts.length > 0 && posts.map((post: Post) => (
+        {!!post && post.status === 'success' && !!post && post.data.length > 0 && post.data.map((post: Post) => (
           <Card
             id={post.id}
             title={post.title}
@@ -79,11 +70,11 @@ const Home: React.FC<PageProps> = ({ isMobile, isTablet }) => {
             key={post.id}
           />
         ))}
-        {postStatus === 'success' && (<PaginationWrapper>
+        {!!post && post.status === 'success' && (<PaginationWrapper>
           <StyledButton onClick={() => handlePagination('prev')} disabled={page === 1}><FontAwesomeIcon
             icon={faAngleLeft}/><span>Prev</span></StyledButton>
           <StyledButton onClick={() => handlePagination('next')}
-                        disabled={countStatus === 'success' && page === pageCount}><span>Next</span><FontAwesomeIcon
+                        disabled={!!count && count.status === 'success' && page === pageCount}><span>Next</span><FontAwesomeIcon
             icon={faAngleRight}/></StyledButton>
         </PaginationWrapper>
         )}
@@ -97,10 +88,9 @@ type Params = {
   queryKey: [string, { page: number }];
 };
 
-const getPosts: any = async (params: Params) => {
-  const [, { page }] = params.queryKey;
+const getPosts = async (params: Params) => {
+  const [,  { page }] = params.queryKey;
   const response = await axios.get(`https://6144e843411c860017d256f0.mockapi.io/api/v1/posts?page=${page}&limit=5&sortBy=createdAt&order=desc`);
-
   if (!(response.statusText === 'OK')) {
     throw new Error("Problem fetching data");
   }
@@ -108,15 +98,14 @@ const getPosts: any = async (params: Params) => {
   return response.data;
 }
 
-const getCount: any = async (params: Params) => {
-  const [, {}] = params.queryKey;
-  const response = await axios.get(`https://6144e843411c860017d256f0.mockapi.io/api/v1/posts?sortBy=createdAt&order=desc`);
+const getCount = async () => {
+  const response = await axios.get(`https://6144e843411c860017d256f0.mockapi.io/api/v1/posts`);
 
   if (!(response.statusText === 'OK')) {
     throw new Error("Problem fetching data");
   }
 
-  return response.data.length;
+  return response.data;
 }
 
 const Wrapper = styled.div`
