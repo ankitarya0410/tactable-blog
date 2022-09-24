@@ -43,6 +43,6 @@ export interface MobileProps {
 }
 
 export interface PageProps {
-  isMobile?: boolean,
-  isTablet?: boolean
+  isMobile: boolean,
+  isTablet: boolean
 }
